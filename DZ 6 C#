@@ -1,0 +1,274 @@
+
+namespace Classes
+{
+    class Group
+    {
+        private List<Student> students;
+        private string groupName;
+        private string specialization;
+        private int courseNumber;
+
+        // Конструктор по умолчанию
+        public Group() : this(new List<Student>(), "Название", "Название", 0)
+        {
+            Console.WriteLine("Основной конструктор!");
+        }
+
+        public Group(List<Student> students, string groupName, string specialization, int courseNumber)
+        {
+            this.students = students;
+            this.groupName = groupName;
+            this.specialization = specialization;
+            this.courseNumber = courseNumber;
+        }
+
+        public void ShowGroupStudents()
+        {
+            Console.WriteLine("Group: " + groupName + ", Specialization: " + specialization);
+            for (int i = 0; i < students.Count; i++)
+            {
+                Console.WriteLine((i + 1).ToString() + ". " + students[i].GetLastName() + " " + students[i].GetFirstName());
+            }
+        }
+
+        public void AddStudent(Student student)
+        {
+            students.Add(student);
+        }
+
+        public void EditGroupData(string newGroupName, string newSpecialization, int newCourseNumber)
+        {
+            groupName = newGroupName;
+            specialization = newSpecialization;
+            courseNumber = newCourseNumber;
+        }
+
+        public void TransferStudent(Student student, Group newGroup)
+        {
+            students.Remove(student);
+            newGroup.AddStudent(student);
+        }
+
+        public void DismissWorstStudent()
+        {
+            if (students.Count == 0)
+            {
+                Console.WriteLine("Группа пустая, без студентов");
+                return;
+            }
+
+            Student worstStudent = students[0];
+            int minAverageGrade = GetAverageGrade(worstStudent);
+
+            foreach (var student in students)
+            {
+                int averageGrade = GetAverageGrade(student);
+                if (averageGrade < minAverageGrade)
+                {
+                    minAverageGrade = averageGrade;
+                    worstStudent = student;
+                }
+            }
+
+            students.Remove(worstStudent);
+            Console.WriteLine("Отчислен худший ученик: " + worstStudent.GetLastName() + " " + worstStudent.GetFirstName());
+        }
+
+        private int GetAverageGrade(Student student)
+        {
+            int total = 0;
+            int totalCount = student.GetGradesTests().Count + student.GetGradesCourseworks().Count + student.GetGradesExams().Count;
+
+            if (totalCount == 0)
+            {
+                return 0;
+            }
+
+            foreach (var grade in student.GetGradesTests())
+            {
+                total += grade;
+            }
+            foreach (var grade in student.GetGradesCourseworks())
+            {
+                total += grade;
+            }
+            foreach (var grade in student.GetGradesExams())
+            {
+                total += grade;
+            }
+            return total / totalCount;
+        }
+
+    }
+
+    class Student
+    {
+        private string lastName;
+        private string firstName;
+        private string patronymic;
+        private DateTime dateOfBirth;
+        private string homeAddress;
+        private string phoneNumber;
+        private List<int> gradesTests = new List<int>();
+        private List<int> gradesCourseworks = new List<int>();
+        private List<int> gradesExams = new List<int>();
+
+        public Student() : this("Иванов", "Иван") { }
+
+        public Student(string lastName, string firstName) : this(lastName, firstName, "", DateTime.Now, "Косая алея", "09305553344") { }
+
+        public Student(string lastName, string firstName, string patronymic, DateTime dateOfBirth, string homeAddress, string phoneNumber)
+        {
+            SetLastName(lastName);
+            SetFirstName(firstName);
+            SetPatronymic(patronymic);
+            SetDateOfBirth(dateOfBirth);
+            SetHomeAddress(homeAddress);
+            SetPhoneNumber(phoneNumber);
+            Console.WriteLine("Основной конструктор!");
+        }
+
+        public void SetLastName(string lastName)
+        {
+            this.lastName = lastName;
+        }
+
+        public void SetFirstName(string firstName)
+        {
+            this.firstName = firstName;
+        }
+
+        public void SetPatronymic(string patronymic)
+        {
+            this.patronymic = patronymic;
+        }
+
+        public void SetDateOfBirth(DateTime dateOfBirth)
+        {
+            this.dateOfBirth = dateOfBirth;
+        }
+
+        public void SetHomeAddress(string homeAddress)
+        {
+            if (!string.IsNullOrEmpty(homeAddress))
+                this.homeAddress = homeAddress;
+        }
+
+        public void SetPhoneNumber(string phoneNumber)
+        {
+            this.phoneNumber = phoneNumber;
+        }
+
+        public string GetLastName()
+        {
+            return lastName;
+        }
+
+        public string GetFirstName()
+        {
+            return firstName;
+        }
+
+        public string GetPatronymic()
+        {
+            return patronymic;
+        }
+
+        public DateTime GetDateOfBirth()
+        {
+            return dateOfBirth;
+        }
+
+        public string GetHomeAddress()
+        {
+            return homeAddress;
+        }
+
+        public string GetPhoneNumber()
+        {
+            return phoneNumber;
+        }
+
+        public List<int> GetGradesTests()
+        {
+            return gradesTests;
+        }
+
+        public List<int> GetGradesCourseworks()
+        {
+            return gradesCourseworks;
+        }
+
+        public List<int> GetGradesExams()
+        {
+            return gradesExams;
+        }
+
+        public void AddTestRate(int rate)
+        {
+            gradesTests.Add(rate);
+        }
+
+        public void AddCourseworkRate(int rate)
+        {
+            gradesCourseworks.Add(rate);
+        }
+
+        public void AddExamRate(int rate)
+        {
+            gradesExams.Add(rate);
+        }
+
+        public void DisplayStudentInfo()
+        {
+            Console.WriteLine("Student Information:");
+            Console.WriteLine("Name: " + lastName + " " + firstName + " " + patronymic);
+            Console.WriteLine("Date of Birth: " + dateOfBirth.ToShortDateString());
+            Console.WriteLine("Home Address: " + homeAddress);
+            Console.WriteLine("Phone Number: " + phoneNumber);
+            Console.WriteLine("Grades:");
+            Console.WriteLine("Tests:");
+            foreach (int grade in gradesTests)
+            {
+                Console.Write(grade + " ");
+            }
+            Console.WriteLine();
+            Console.WriteLine("Courseworks:");
+            foreach (int grade in gradesCourseworks)
+            {
+                Console.Write(grade + " ");
+            }
+            Console.WriteLine();
+            Console.WriteLine("Exams:");
+            foreach (int grade in gradesExams)
+            {
+                Console.Write(grade + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Student a = new Student();
+            Student b = new Student("Andrew", "Rossi");
+            Student c = new Student("Ivanov", "Ivan", "Ivanovich", new DateTime(1977, 5, 25), "Kosalea", "123456789");
+            c.AddTestRate(4);
+            c.AddCourseworkRate(5);
+            c.AddExamRate(3);
+            c.DisplayStudentInfo();
+
+            Group group = new Group();
+            group.AddStudent(a);
+            group.AddStudent(b);
+            group.AddStudent(c);
+
+            group.ShowGroupStudents();
+
+            group.DismissWorstStudent();
+            group.ShowGroupStudents();
+        }
+    }
+}
